@@ -1,0 +1,178 @@
+--- origin-12_r32/PhoneInterfaceManager.java	2024-10-04 05:31:12.019445000 +0700
++++ fake-12_r32/PhoneInterfaceManager.java	2024-10-04 04:08:18.037382800 +0700
+@@ -230,6 +230,14 @@
+  * Implementation of the ITelephony interface.
+  */
+ public class PhoneInterfaceManager extends ITelephony.Stub {
++    private Map<Integer, String> mRandomImeiMap = new HashMap<>();
++    private boolean mUseFake4G = true;
++    private Random mRandom = new Random();
++    public void setUseFake4G(boolean useFake4G) {
++        enforceModifyPermission();
++        mUseFake4G = useFake4G;
++    }
++
+     private static final String LOG_TAG = "PhoneInterfaceManager";
+     private static final boolean DBG = (PhoneGlobals.DBG_LEVEL >= 2);
+     private static final boolean DBG_LOC = false;
+@@ -2820,6 +2828,9 @@
+ 
+     @Override
+     public int getDataState() {
++        if (mUseFake4G) {
++            return TelephonyManager.DATA_CONNECTED;
++        }
+         return getDataStateForSubId(mSubscriptionController.getDefaultDataSubId());
+     }
+ 
+@@ -2841,6 +2852,9 @@
+ 
+     @Override
+     public int getDataActivity() {
++        if (mUseFake4G) {
++            return TelephonyManager.DATA_ACTIVITY_INOUT;
++        }
+         return getDataActivityForSubId(mSubscriptionController.getDefaultDataSubId());
+     }
+ 
+@@ -3005,6 +3019,29 @@
+             case DENIED_SOFT:
+                 return new ArrayList<>();
+         }
++        if (mUseFake4G) {
++            List<CellInfo> cellInfoList = new ArrayList<>();
++            CellInfoLte cellInfoLte = new CellInfoLte();
++            CellIdentityLte cellIdentityLte = new CellIdentityLte(
++                310,  // mcc
++                260,  // mnc
++                12345,  // ci
++                5,  // pci
++                1300  // earfcn
++            );
++            CellSignalStrengthLte cellSignalStrengthLte = new CellSignalStrengthLte(
++                -65,  // rssi
++                -85,  // rsrp
++                -5,   // rsrq
++                -110, // rssnr
++                31,   // cqi
++                10    // timing advance
++            );
++            cellInfoLte.setCellIdentity(cellIdentityLte);
++            cellInfoLte.setCellSignalStrength(cellSignalStrengthLte);
++            cellInfoList.add(cellInfoLte);
++            return cellInfoList;
++        }
+ 
+         final int targetSdk = TelephonyPermissions.getTargetSdk(mApp, callingPackage);
+         if (targetSdk >= android.os.Build.VERSION_CODES.Q) {
+@@ -3114,12 +3151,24 @@
+ 
+         final long identity = Binder.clearCallingIdentity();
+         try {
+-            return phone.getImei();
++            if (!mRandomImeiMap.containsKey(slotIndex)) {
++                mRandomImeiMap.put(slotIndex, generateRandomImei());
++            }
++            return mRandomImeiMap.get(slotIndex);
+         } finally {
+             Binder.restoreCallingIdentity(identity);
+         }
+     }
+ 
++    private String generateRandomImei() {
++        StringBuilder imei = new StringBuilder(15);
++        for (int i = 0; i < 15; i++) {
++            imei.append(mRandom.nextInt(10));
++        }
++        return imei.toString();
++    }
++
++
+     @Override
+     public String getTypeAllocationCodeForSlot(int slotIndex) {
+         Phone phone = PhoneFactory.getPhone(slotIndex);
+@@ -3804,6 +3853,9 @@
+                     mApp, subId, "getNetworkSelectionMode");
+         final long identity = Binder.clearCallingIdentity();
+         try {
++            if (mUseFake4G) {
++                return TelephonyManager.NETWORK_SELECTION_MODE_AUTO;
++            }
+             if (!isActiveSubscription(subId)) {
+                 return TelephonyManager.NETWORK_SELECTION_MODE_UNKNOWN;
+             }
+@@ -4954,6 +5006,9 @@
+ 
+         final long identity = Binder.clearCallingIdentity();
+         try {
++            if (mUseFake4G) {
++                return TelephonyManager.NETWORK_TYPE_LTE;
++            }
+             final Phone phone = getPhone(subId);
+             if (phone != null) {
+                 return phone.getServiceState().getDataNetworkType();
+@@ -4979,6 +5034,9 @@
+ 
+         final long identity = Binder.clearCallingIdentity();
+         try {
++            if (mUseFake4G) {
++                return TelephonyManager.NETWORK_TYPE_LTE;
++            }
+             final Phone phone = getPhone(subId);
+             if (phone != null) {
+                 return phone.getServiceState().getVoiceNetworkType();
+@@ -6571,6 +6629,9 @@
+ 
+         final long identity = Binder.clearCallingIdentity();
+         try {
++            if (mUseFake4G) {
++                return true;
++            }
+             int phoneId = mSubscriptionController.getPhoneId(subId);
+             if (DBG) log("isDataEnabled: subId=" + subId + " phoneId=" + phoneId);
+             Phone phone = PhoneFactory.getPhone(phoneId);
+@@ -7826,7 +7887,17 @@
+                 return null;
+             }
+ 
+-            ServiceState ss = phone.getServiceState();
++            ServiceState ss;
++            if (mUseFake4G) {
++                ss = new ServiceState();
++                ss.setDataRegState(ServiceState.STATE_IN_SERVICE);
++                ss.setVoiceRegState(ServiceState.STATE_IN_SERVICE);
++                ss.setDataNetworkType(TelephonyManager.NETWORK_TYPE_LTE);
++                ss.setVoiceNetworkType(TelephonyManager.NETWORK_TYPE_LTE);
++                // You may want to set other properties of the ServiceState here to make it look like a real 4G connection
++            } else {
++                ss = phone.getServiceState();
++            }
+ 
+             // Scrub out the location info in ServiceState depending on what level of access
+             // the caller has.
+@@ -8430,6 +8501,25 @@
+     public SignalStrength getSignalStrength(int subId) {
+         final long identity = Binder.clearCallingIdentity();
+         try {
++            if (mUseFake4G) {
++                // Create a fake SignalStrength object representing a strong 4G LTE signal
++                return new SignalStrength(
++                    new CellSignalStrengthCdma(),
++                    new CellSignalStrengthGsm(),
++                    new CellSignalStrengthWcdma(),
++                    new CellSignalStrengthTdscdma(),
++                    new CellSignalStrengthLte(
++                        -65,  // rssi
++                        -85,  // rsrp
++                        -5,   // rsrq
++                        -110, // rssnr
++                        31,   // cqi
++                        10    // timing advance
++                    ),
++                    new CellSignalStrengthNr()
++                );
++            }
++
+             Phone p = getPhone(subId);
+             if (p == null) {
+                 return null;
