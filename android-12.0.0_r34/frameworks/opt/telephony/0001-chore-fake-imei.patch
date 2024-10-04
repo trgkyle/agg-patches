@@ -1,16 +1,17 @@
-From fc1c9e66969e389df50807e4916662a9c6dc306f Mon Sep 17 00:00:00 2001
-From: Kyle Nguyen <kylenyan1215@gmail.com>
-Date: Fri, 4 Oct 2024 07:26:13 +0700
-Subject: [PATCH] feat: fake 4g
+From 8621088a5da3962d0240a5957d3440e5f8e55207 Mon Sep 17 00:00:00 2001
+From: Kyle Ng <kylenyan1215@gmail.com>
+Date: Fri, 4 Oct 2024 09:18:00 +0000
+Subject: [PATCH] chore: fake imei
 
+Change-Id: Iffb55f798e4e5fa2f12db21f004a3d7b365670c7
 ---
- PhoneSubInfoController.java | 486 +++++++++---------------------------
+ .../telephony/PhoneSubInfoController.java     | 486 +++++-------------
  1 file changed, 124 insertions(+), 362 deletions(-)
 
-diff --git a/PhoneSubInfoController.java b/PhoneSubInfoController.java
+diff --git a/src/java/com/android/internal/telephony/PhoneSubInfoController.java b/src/java/com/android/internal/telephony/PhoneSubInfoController.java
 index 8db71d9..fd84147 100644
---- a/PhoneSubInfoController.java
-+++ b/PhoneSubInfoController.java
+--- a/src/java/com/android/internal/telephony/PhoneSubInfoController.java
++++ b/src/java/com/android/internal/telephony/PhoneSubInfoController.java
 @@ -41,6 +41,9 @@ import com.android.internal.telephony.uicc.UiccCard;
  import com.android.internal.telephony.uicc.UiccCardApplication;
  import com.android.telephony.Rlog;
@@ -650,5 +651,5 @@ index 8db71d9..fd84147 100644
 +}
 \ No newline at end of file
 -- 
-2.45.2.windows.1
+2.34.1
 

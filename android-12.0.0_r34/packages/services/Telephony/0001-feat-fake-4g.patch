@@ -1,16 +1,17 @@
-From fc1c9e66969e389df50807e4916662a9c6dc306f Mon Sep 17 00:00:00 2001
-From: Kyle Nguyen <kylenyan1215@gmail.com>
-Date: Fri, 4 Oct 2024 07:26:13 +0700
+From 9c060215555be7ea03056028169c1f84b215bc0b Mon Sep 17 00:00:00 2001
+From: Kyle Ng <kylenyan1215@gmail.com>
+Date: Fri, 4 Oct 2024 09:22:06 +0000
 Subject: [PATCH] feat: fake 4g
 
+Change-Id: Ifa52303fe0eb9a59c3baa2d9c0ecee5baa0dba09
 ---
- PhoneInterfaceManager.java | 94 +++++++++++++++++++++++++++++++++++++-
+ .../android/phone/PhoneInterfaceManager.java  | 94 ++++++++++++++++++-
  1 file changed, 92 insertions(+), 2 deletions(-)
 
-diff --git a/PhoneInterfaceManager.java b/PhoneInterfaceManager.java
-index c75933b..cacbb39 100644
---- a/PhoneInterfaceManager.java
-+++ b/PhoneInterfaceManager.java
+diff --git a/src/com/android/phone/PhoneInterfaceManager.java b/src/com/android/phone/PhoneInterfaceManager.java
+index c75933b..cacbb39 100755
+--- a/src/com/android/phone/PhoneInterfaceManager.java
++++ b/src/com/android/phone/PhoneInterfaceManager.java
 @@ -230,6 +230,14 @@ import java.util.function.Consumer;
   * Implementation of the ITelephony interface.
   */
@@ -188,5 +189,5 @@ index c75933b..cacbb39 100644
              if (p == null) {
                  return null;
 -- 
-2.45.2.windows.1
+2.34.1
 
