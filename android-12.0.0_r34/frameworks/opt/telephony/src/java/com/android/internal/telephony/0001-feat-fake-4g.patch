@@ -1,6 +1,17 @@
---- origin-12_r32/PhoneSubInfoController.java	2024-10-04 05:35:10.218543100 +0700
-+++ fake-12_r32/PhoneSubInfoController.java	2024-10-04 03:07:52.319933000 +0700
-@@ -41,6 +41,9 @@
+From fc1c9e66969e389df50807e4916662a9c6dc306f Mon Sep 17 00:00:00 2001
+From: Kyle Nguyen <kylenyan1215@gmail.com>
+Date: Fri, 4 Oct 2024 07:26:13 +0700
+Subject: [PATCH] feat: fake 4g
+
+---
+ PhoneSubInfoController.java | 486 +++++++++---------------------------
+ 1 file changed, 124 insertions(+), 362 deletions(-)
+
+diff --git a/PhoneSubInfoController.java b/PhoneSubInfoController.java
+index 8db71d9..fd84147 100644
+--- a/PhoneSubInfoController.java
++++ b/PhoneSubInfoController.java
+@@ -41,6 +41,9 @@ import com.android.internal.telephony.uicc.UiccCard;
  import com.android.internal.telephony.uicc.UiccCardApplication;
  import com.android.telephony.Rlog;
  
@@ -10,7 +21,7 @@
  public class PhoneSubInfoController extends IPhoneSubInfo.Stub {
      private static final String TAG = "PhoneSubInfoController";
      private static final boolean DBG = true;
-@@ -48,6 +51,18 @@
+@@ -48,6 +51,18 @@ public class PhoneSubInfoController extends IPhoneSubInfo.Stub {
  
      @UnsupportedAppUsage(maxTargetSdk = Build.VERSION_CODES.R, trackingBug = 170729553)
      private final Context mContext;
@@ -29,7 +40,7 @@
  
      public PhoneSubInfoController(Context context) {
          ServiceRegisterer phoneSubServiceRegisterer = TelephonyFrameworkInitializer
-@@ -57,6 +72,28 @@
+@@ -57,6 +72,28 @@ public class PhoneSubInfoController extends IPhoneSubInfo.Stub {
              phoneSubServiceRegisterer.register(this);
          }
          mContext = context;
@@ -58,7 +69,7 @@
      }
  
      @Deprecated
-@@ -71,52 +108,34 @@
+@@ -71,52 +108,34 @@ public class PhoneSubInfoController extends IPhoneSubInfo.Stub {
  
      public String getDeviceIdForPhone(int phoneId, String callingPackage,
              String callingFeatureId) {
@@ -121,7 +132,7 @@
      }
  
      public String getDeviceSvn(String callingPackage, String callingFeatureId) {
-@@ -125,8 +144,8 @@
+@@ -125,8 +144,8 @@ public class PhoneSubInfoController extends IPhoneSubInfo.Stub {
  
      public String getDeviceSvnUsingSubId(int subId, String callingPackage,
              String callingFeatureId) {
@@ -132,7 +143,7 @@
      }
  
      @Deprecated
-@@ -141,33 +160,8 @@
+@@ -141,33 +160,8 @@ public class PhoneSubInfoController extends IPhoneSubInfo.Stub {
  
      public String getSubscriberIdForSubscriber(int subId, String callingPackage,
              String callingFeatureId) {
@@ -168,7 +179,7 @@
      }
  
      @Deprecated
-@@ -175,9 +169,6 @@
+@@ -175,9 +169,6 @@ public class PhoneSubInfoController extends IPhoneSubInfo.Stub {
          return getIccSerialNumberWithFeature(callingPackage, null);
      }
  
@@ -178,7 +189,7 @@
      public String getIccSerialNumberWithFeature(String callingPackage, String callingFeatureId) {
          return getIccSerialNumberForSubscriber(getDefaultSubscription(), callingPackage,
                  callingFeatureId);
-@@ -185,8 +176,8 @@
+@@ -185,8 +176,8 @@ public class PhoneSubInfoController extends IPhoneSubInfo.Stub {
  
      public String getIccSerialNumberForSubscriber(int subId, String callingPackage,
              String callingFeatureId) {
@@ -189,7 +200,7 @@
      }
  
      public String getLine1Number(String callingPackage, String callingFeatureId) {
-@@ -194,13 +185,10 @@
+@@ -194,13 +185,10 @@ public class PhoneSubInfoController extends IPhoneSubInfo.Stub {
                  callingFeatureId);
      }
  
@@ -205,7 +216,7 @@
      }
  
      public String getLine1AlphaTag(String callingPackage, String callingFeatureId) {
-@@ -210,20 +198,18 @@
+@@ -210,20 +198,18 @@ public class PhoneSubInfoController extends IPhoneSubInfo.Stub {
  
      public String getLine1AlphaTagForSubscriber(int subId, String callingPackage,
              String callingFeatureId) {
@@ -230,7 +241,7 @@
      }
  
      public String getVoiceMailNumber(String callingPackage, String callingFeatureId) {
-@@ -233,13 +219,8 @@
+@@ -233,13 +219,8 @@ public class PhoneSubInfoController extends IPhoneSubInfo.Stub {
  
      public String getVoiceMailNumberForSubscriber(int subId, String callingPackage,
              String callingFeatureId) {
@@ -246,7 +257,7 @@
      }
  
      public String getVoiceMailAlphaTag(String callingPackage, String callingFeatureId) {
-@@ -249,8 +230,8 @@
+@@ -249,8 +230,8 @@ public class PhoneSubInfoController extends IPhoneSubInfo.Stub {
  
      public String getVoiceMailAlphaTagForSubscriber(int subId, String callingPackage,
              String callingFeatureId) {
@@ -257,7 +268,7 @@
      }
  
      /**
-@@ -258,321 +239,102 @@
+@@ -258,313 +239,52 @@ public class PhoneSubInfoController extends IPhoneSubInfo.Stub {
       **/
      @UnsupportedAppUsage(maxTargetSdk = Build.VERSION_CODES.R, trackingBug = 170729553)
      private Phone getPhone(int subId) {
@@ -459,10 +470,8 @@
              String callingFeatureId) {
 -        return callPhoneMethodForSubIdWithReadCheck(subId, callingPackage, callingFeatureId,
 -                "getGroupIdLevel1", (phone)-> phone.getGroupIdLevel1());
-+        // Mock implementation
-+        return "mock_group_id_level_1";
-     }
- 
+-    }
+-
 -    /** Below are utility methods that abstracts the flow that many public methods use:
 -     *  1. Check permission: pass, throw exception, or fails (returns false).
 -     *  2. clearCallingIdentity.
@@ -491,10 +500,7 @@
 -                callingFeatureId, message)) {
 -            return null;
 -        }
-+    private void log(String s) {
-+        Rlog.d(TAG, s);
-+    }
- 
+-
 -        final long identity = Binder.clearCallingIdentity();
 -        try {
 -            Phone phone = getPhone(subId);
@@ -507,11 +513,8 @@
 -        } finally {
 -            Binder.restoreCallingIdentity(identity);
 -        }
-+    @UnsupportedAppUsage(maxTargetSdk = Build.VERSION_CODES.R, trackingBug = 170729553)
-+    private void loge(String s) {
-+        Rlog.e(TAG, s);
-     }
- 
+-    }
+-
 -    private <T> T callPhoneMethodForSubIdWithReadCheck(int subId, String callingPackage,
 -            @Nullable String callingFeatureId, String message,
 -            CallPhoneMethodHelper<T> callMethodHelper) {
@@ -585,31 +588,38 @@
 -                phone.getSubId(), callingPackage, callingFeatureId, message)) {
 -            return null;
 -        }
-+    // Method to regenerate all random values (for testing purposes)
-+    public void randomizeAll() {
-+        randomizeAll();
-+    }
- 
+-
 -        final long identity = Binder.clearCallingIdentity();
 -        try {
 -            return callMethodHelper.callMethod(phone);
 -        } finally {
 -            Binder.restoreCallingIdentity(identity);
 -        }
++        // Mock implementation
++        return "mock_group_id_level_1";
+     }
+ 
+     private void log(String s) {
+@@ -575,4 +295,46 @@ public class PhoneSubInfoController extends IPhoneSubInfo.Stub {
+     private void loge(String s) {
+         Rlog.e(TAG, s);
+     }
+-}
++
++    // Method to regenerate all random values (for testing purposes)
++    public void randomizeAll() {
++        randomizeAll();
++    }
++
 +    // Setter methods for testing
 +    public void setDeviceId(String deviceId) {
 +        mDeviceId = deviceId;
-     }
- 
--    private void log(String s) {
--        Rlog.d(TAG, s);
++    }
++
 +    public void setImei(String imei) {
 +        mImei = imei;
-     }
- 
--    @UnsupportedAppUsage(maxTargetSdk = Build.VERSION_CODES.R, trackingBug = 170729553)
--    private void loge(String s) {
--        Rlog.e(TAG, s);
++    }
++
 +    public void setNai(String nai) {
 +        mNai = nai;
 +    }
@@ -636,7 +646,9 @@
 +
 +    public void setVoiceMailAlphaTag(String voiceMailAlphaTag) {
 +        mVoiceMailAlphaTag = voiceMailAlphaTag;
-     }
--}
++    }
 +}
 \ No newline at end of file
+-- 
+2.45.2.windows.1
+

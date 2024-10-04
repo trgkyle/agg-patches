@@ -1,6 +1,17 @@
---- origin-12_r32/PhoneInterfaceManager.java	2024-10-04 05:31:12.019445000 +0700
-+++ fake-12_r32/PhoneInterfaceManager.java	2024-10-04 04:08:18.037382800 +0700
-@@ -230,6 +230,14 @@
+From fc1c9e66969e389df50807e4916662a9c6dc306f Mon Sep 17 00:00:00 2001
+From: Kyle Nguyen <kylenyan1215@gmail.com>
+Date: Fri, 4 Oct 2024 07:26:13 +0700
+Subject: [PATCH] feat: fake 4g
+
+---
+ PhoneInterfaceManager.java | 94 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 92 insertions(+), 2 deletions(-)
+
+diff --git a/PhoneInterfaceManager.java b/PhoneInterfaceManager.java
+index c75933b..cacbb39 100644
+--- a/PhoneInterfaceManager.java
++++ b/PhoneInterfaceManager.java
+@@ -230,6 +230,14 @@ import java.util.function.Consumer;
   * Implementation of the ITelephony interface.
   */
  public class PhoneInterfaceManager extends ITelephony.Stub {
@@ -15,7 +26,7 @@
      private static final String LOG_TAG = "PhoneInterfaceManager";
      private static final boolean DBG = (PhoneGlobals.DBG_LEVEL >= 2);
      private static final boolean DBG_LOC = false;
-@@ -2820,6 +2828,9 @@
+@@ -2820,6 +2828,9 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
  
      @Override
      public int getDataState() {
@@ -25,7 +36,7 @@
          return getDataStateForSubId(mSubscriptionController.getDefaultDataSubId());
      }
  
-@@ -2841,6 +2852,9 @@
+@@ -2841,6 +2852,9 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
  
      @Override
      public int getDataActivity() {
@@ -35,7 +46,7 @@
          return getDataActivityForSubId(mSubscriptionController.getDefaultDataSubId());
      }
  
-@@ -3005,6 +3019,29 @@
+@@ -3005,6 +3019,29 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
              case DENIED_SOFT:
                  return new ArrayList<>();
          }
@@ -65,7 +76,7 @@
  
          final int targetSdk = TelephonyPermissions.getTargetSdk(mApp, callingPackage);
          if (targetSdk >= android.os.Build.VERSION_CODES.Q) {
-@@ -3114,12 +3151,24 @@
+@@ -3114,12 +3151,24 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
  
          final long identity = Binder.clearCallingIdentity();
          try {
@@ -91,7 +102,7 @@
      @Override
      public String getTypeAllocationCodeForSlot(int slotIndex) {
          Phone phone = PhoneFactory.getPhone(slotIndex);
-@@ -3804,6 +3853,9 @@
+@@ -3804,6 +3853,9 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
                      mApp, subId, "getNetworkSelectionMode");
          final long identity = Binder.clearCallingIdentity();
          try {
@@ -101,7 +112,7 @@
              if (!isActiveSubscription(subId)) {
                  return TelephonyManager.NETWORK_SELECTION_MODE_UNKNOWN;
              }
-@@ -4954,6 +5006,9 @@
+@@ -4954,6 +5006,9 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
  
          final long identity = Binder.clearCallingIdentity();
          try {
@@ -111,7 +122,7 @@
              final Phone phone = getPhone(subId);
              if (phone != null) {
                  return phone.getServiceState().getDataNetworkType();
-@@ -4979,6 +5034,9 @@
+@@ -4979,6 +5034,9 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
  
          final long identity = Binder.clearCallingIdentity();
          try {
@@ -121,7 +132,7 @@
              final Phone phone = getPhone(subId);
              if (phone != null) {
                  return phone.getServiceState().getVoiceNetworkType();
-@@ -6571,6 +6629,9 @@
+@@ -6571,6 +6629,9 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
  
          final long identity = Binder.clearCallingIdentity();
          try {
@@ -131,7 +142,7 @@
              int phoneId = mSubscriptionController.getPhoneId(subId);
              if (DBG) log("isDataEnabled: subId=" + subId + " phoneId=" + phoneId);
              Phone phone = PhoneFactory.getPhone(phoneId);
-@@ -7826,7 +7887,17 @@
+@@ -7826,7 +7887,17 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
                  return null;
              }
  
@@ -150,7 +161,7 @@
  
              // Scrub out the location info in ServiceState depending on what level of access
              // the caller has.
-@@ -8430,6 +8501,25 @@
+@@ -8430,6 +8501,25 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
      public SignalStrength getSignalStrength(int subId) {
          final long identity = Binder.clearCallingIdentity();
          try {
@@ -176,3 +187,6 @@
              Phone p = getPhone(subId);
              if (p == null) {
                  return null;
+-- 
+2.45.2.windows.1
+
